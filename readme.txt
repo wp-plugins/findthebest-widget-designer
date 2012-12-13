@@ -8,7 +8,7 @@ Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-FindTheBest’s WordPress plugin enables data-driven publishers and bloggers to easily add interactive, customizable and unbiased product, service and reference listings to blogs and websites.
+Enables data-driven publishers and bloggers to easily add interactive, customizable and unbiased product, service and reference listings.
 
 == Description ==
 
