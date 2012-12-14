@@ -1,7 +1,7 @@
 === FindTheBest Widget Designer ===
 Contributors: desrosj, findthebest
 Donate link: http://findthebest.com/
-Tags: findthebest,embed,data,widget,comparison
+Tags: findthebest,embed,data,widget,comparison,find the best
 Requires at least: 2.7
 Tested up to: 3.5
 Stable tag: 1.0
@@ -22,7 +22,7 @@ Special thanks to the TechCrunch Development team.
 
 == Installation ==
 
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
+1. Upload plugin folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Use the FindTheBest button above the editor to select, configure, and insert widgets.
 
