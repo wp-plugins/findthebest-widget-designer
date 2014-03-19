@@ -1,214 +1,232 @@
 <?php
-/*
-  Plugin Name: FindTheBest Widget Picker
-  Plugin URI: http://findthebest.com
-  Description: The FindTheBest plugin allows you to embed widgets from FindTheBest into your WordPress site's blog posts.
-  Version: 1.0
-  Author: Jonathan Desrosiers & the FindTheBest Team.
-  Author URI: http://findthebest.com
-  License: GPLv2
+/**
+ * Plugin Name: Content Boost by FindTheBest
+ * Description: The FindTheBest plugin allows you to embed widgets from FindTheBest into your WordPress site's blog posts.
+ * Version: 2.0
+ * Author: FindTheBest
+ * Author URI: http://findthebest.com
+ * License: GPLv2
  */
 
-if ( ! class_exists( 'FindTheBest_Widget_Picker' ) ) {
-	class FindTheBest_Widget_Picker {
+namespace ftb;
 
-		function __construct() {
-			add_action( 'admin_init', array( $this,'admin_init' ) );
-			add_action( 'media_buttons', array( $this, 'media_buttons' ), 20 );
+add_action( 'add_meta_boxes', __NAMESPACE__ . '\\add_meta_box' );
+add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\admin_menu' );
+add_action( 'plugins_loaded', __NAMESPACE__ . '\\initialize' );
+add_action( 'wp_ajax_ftb_save_prefs', __NAMESPACE__ . '\\save_prefs' );
+add_shortcode( 'findthebest', __NAMESPACE__ . '\\shortcode_handler' );
 
-			add_action( 'admin_print_scripts-post.php', array( $this, 'admin_print_scripts') );
-			add_action( 'admin_print_scripts-post-new.php', array( $this, 'admin_print_scripts') );
+define( 'FTB_SETTINGS_PREFS', 'ftb_widget_designer_prefs' );
+define( 'FTB_REMOTE_ROOT', 'http://www.findthebest.com' );
 
-			add_action( 'admin_footer-post.php', array( $this, 'admin_footer' ) );
-			add_action( 'admin_footer-post-new.php', array( $this, 'admin_footer' ) );
-
-			add_shortcode( 'findthebest', array( $this, 'shortcode_handler' ) );
-		}
-
-		/**
-		 * Load our scripts
-		 */
-		function admin_print_scripts() {
-			wp_enqueue_script( 'ftb_widget_picker', 'http://web1.ftb-direct.com:8000/sites/all/modules/custom/widgets/WidgetDesigner.js' , array( 'jquery' ), '1.0', false );
-
-			$ftb_options = wp_parse_args( get_option( 'ftb_plugin_settings' ), array( 'publisher_id' => '', 'amazon_id' => '' ) );
-			wp_localize_script( 'ftb_widget_picker', 'ftb_widget_picker_vars',
-				array(
-					'api_url' => 'http://findthebest.com/api/',
-					'publisher_id' => $ftb_options['publisher_id'],
-					'amazon_id' => $ftb_options['amazon_id'],
-				)
-			);
-		}
-
-		/**
-		 * Register our settings sections and fields.
-		 */
-		function admin_init() {
-			register_setting( 'ftb_plugin_settings', 'ftb_plugin_settings', array( $this, 'sanitize_plugin_options' ) );
-
-			//add a section for the plugin's settings to the writing page
-			add_settings_section( 'ftb_settings_section', 'Find The Best Plugin Settings', array( $this, 'settings_section_text' ), 'writing' );
-			add_settings_field( 'ftb_publisher_id_field', 'Publisher ID: ', array( $this,'make_publisher_id_settings_field' ), 'writing', 'ftb_settings_section' );
-			add_settings_field( 'ftb_amazon_id_field', 'Amazon ID: ', array( $this,'make_amazon_id_settings_field' ), 'writing', 'ftb_settings_section' );
-		}
-
-		function settings_section_text() {
-			echo "<p>The FTB plugin requires your publisher ID in order to function.</p>";
-			settings_fields( 'ftb_plugin_settings' );
-		}
-
-		function make_publisher_id_settings_field() {
-			$settings = get_option( 'ftb_plugin_settings' );
-
-			$settings = wp_parse_args( $settings, array( 'publisher_id' => '' ) );
-			?>
-				<input id="ftb_publisher_id_field" type="text" value="<?php echo esc_attr( $settings['publisher_id'] ); ?>" name="ftb_plugin_settings[publisher_id]" />
-			<?php
-		}
-
-		function make_amazon_id_settings_field() {
-			$settings = get_option( 'ftb_plugin_settings' );
-
-			$settings = wp_parse_args( $settings, array( 'amazon_id' => '' ) );
-			?>
-				<input id="ftb_amazon_id_field" type="text" value="<?php echo esc_attr( $settings['amazon_id'] ); ?>" name="ftb_plugin_settings[amazon_id]" />
-			<?php
-		}
-
-		function sanitize_plugin_options( $input ) {
-			$newinput = wp_parse_args( $input, array( 'publisher_id' => '', 'amazon_id' => '' ) );
-
-			$newinput['publisher_id'] = sanitize_text_field( trim( $newinput['publisher_id'] ) );
-
-			if( ! preg_match( '/^[a-z0-9]{0,32}$/i', $newinput['publisher_id'] ) )
-				$newinput['publisher_id'] = '';
-
-			$newinput['amazon_id'] = sanitize_text_field( trim( $newinput['amazon_id'] ) );
-
-			return $newinput;
-		}
-
-		/**
-		 * Output the insert FTB widget button
-		 */
-		function media_buttons() {
-			global $hook_suffix;
-
-			if ( $hook_suffix != 'edit.php' && $hook_suffix != 'post.php' && $hook_suffix != 'post-new.php' )
-				return;
-			?>
-
-			<a href="#TB_inline?width=1100&height=600&inlineId=ftb_widget_picker_container" id="add_ftb_widget" class="thickbox" title="Insert FTB Widget"><img src="<?php echo plugins_url( 'images/', __FILE__ ); ?>ftb_wp_media_icon.png" alt="Insert FTB Widget" /></a>
-			<?php
-		}
-
-		/**
-		 * Output the widget picker
-		 */
-		function admin_footer() {
-			?>
-			<div id="ftb_widget_picker_container" style="display:none;">
-				<div id="ftb_widget_picker">
-
-				</div>
-				<input type="button" id="ftb_insert_button" class="button button-primary button-large" value="Insert Into Post" onclick="ftb_send_to_editor();" />
-			</div>
-
-			<script>
-				jQuery(document).ready(function(){
-					FTB.WD.init('#ftb_widget_picker', {
-						pub_id: ftb_widget_picker_vars.publisher_id,
-						amazon_id: ftb_widget_picker_vars.amazon_id
-					});
-				});
-
-				jQuery('#add_ftb_widget').click(function(){
-					setTimeout(
-						function ftb_resize_window() {
-							jQuery('div#TB_window').addClass('ftb_window');
-							jQuery('div#TB_ajaxContent').addClass('ftb_ajaxContent');
-						},
-						500
-					)
-				});
-
-				function ftb_send_to_editor() {
-					var ftb_embed_code = '<div>' + jQuery( '#ftb_widget_picker textarea.ftw-embed-code').val() + '</div>',
-
-					ftb_shortcode = '[findthebest container_style="' + jQuery('div:first', ftb_embed_code).attr('style') + '" width="' + jQuery('iframe', ftb_embed_code).attr('width') + '" height="' + jQuery('iframe', ftb_embed_code).attr('height') + '" style="' + jQuery('iframe', ftb_embed_code).attr('style') + '" src="' + jQuery('iframe', ftb_embed_code).attr('src') + '" after_style="' + jQuery('div', ftb_embed_code).last().attr('style') + '" link_href="' + jQuery('a', ftb_embed_code).attr('href') + '" link_style="' + jQuery('a', ftb_embed_code).attr('style') + '" link_text="' + jQuery('a', ftb_embed_code).html() + '"]';
-					window.send_to_editor( ftb_shortcode );
-				}
-			</script>
-			<style>
-				#TB_window.ftb_window { width: 1130px !important; margin-left: -570px !important; }
-				#TB_ajaxContent.ftb_ajaxContent { width: 1100px !important; }
-				#ftb_insert_button { position: absolute; bottom: 52px; left: 34px; }
-			</style>
-			<?php
-		}
-
-		/**
-		 * Handle the [findthebest] shortcode
-		 * Full example: [findthebest container_style="width:600px;margin:0 auto;" width="600" height="400" style="vertical-align:top;" src="http://work-at-home.findthebest.com/w/ss?new=2&w=600&h=400&initial_slide=1" after_style="text-align:center;" link_href="http://work-at-home.findthebest.com" link_style="font:10px/14px arial;color:#3d3d3d;" link_text="Compare Work at Home"]
-		 *
-		 */
-		function shortcode_handler( $atts ) {
-			//If the attributes are empty, there is no reason to continue
-			if ( empty( $atts ) )
-				return;
-
-			//Take the attributes passed, and set empty parameters as default
-			extract( wp_parse_args( $atts,
-				array(
-					'container_style' => '',
-					'width' => 600,
-					'height' => 400,
-					'style' => '',
-					'src' => '',
-					'after_style' => '',
-					'link_href' => '',
-					'link_style' => '',
-					'link_text' => '',
-				)
-			) );
-
-			if ( empty( $src ) )
-				return;
-
-			$output = '<div';
-
-			if ( ! empty( $container_style ) )
-				$output .= ' style="' . esc_attr( $container_style ) . '"';
-
-			$output .= '><iframe width=' . esc_attr( $width ) . ' height=' . esc_attr( $height ) . ' frameborder=0 scrolling="no" src="' . esc_url( $src ) . '"';
-
-			if ( ! empty( $style ) )
-				$output .= ' style="' . esc_attr( $style ) . '"';
-
-			$output .= '></iframe>';
-
-			if ( ! empty( $link_href ) && ! empty( $link_text ) ) {
-				$output .= '<div';
-
-				if ( ! empty( $after_style ) )
-					$output .= ' style="' . esc_attr( $after_style ) . '"';
-
-				$output .= '><a href="' . esc_url( $link_href ) . '"';
-
-				if ( ! empty( $link_style ) )
-					$output .= ' style="' . esc_attr( $link_style ) . '"';
-
-					$output .= '>' . esc_html( $link_text ) . '</a></div>';
-			}
-
-			$output .= '</div>';
-
-			return $output;
-		}
-	}
-
+function add_meta_box() {
+	\add_meta_box(
+		'ftb',
+		__( 'FindTheBest Suggestions' ),
+		__NAMESPACE__ . '\\meta_box_shim',
+		'post',
+		'side',
+		'high'
+	);
 }
 
-if ( class_exists( 'FindTheBest_Widget_Picker' ) )
-	$findthebest_widget_picker = new FindTheBest_Widget_Picker();
+function admin_footer_shim() {
+	echo render( 'admin_footer' );
+}
+
+function admin_menu( $hook ) {
+	if ( 'post.php' != $hook && 'post-new.php' != $hook ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'ftb_box',
+		file_path( '/js/box.js' ),
+		array( 'jquery' )
+	);
+
+	wp_enqueue_script(
+		'textarea_helper',
+		file_path( '/js/jquery.textarea-helper.js' ),
+		array( 'jquery' )
+	);
+
+	wp_enqueue_script(
+		'postmessage',
+		file_path( '/js/jquery.ba-postmessage.min.js' ),
+		array( 'jquery' )
+	);
+
+	$dependencies = array(
+		'jquery',
+		'ftb_box',
+		'textarea_helper',
+		'postmessage'
+	);
+
+	wp_enqueue_script(
+		'ftb_script',
+		file_path( '/js/ftb.js' ),
+		$dependencies
+	);
+
+	$preferences = get_option( FTB_SETTINGS_PREFS, null );
+	if (null === $preferences) {
+		$preferences = '{}';
+	} else {
+		$preferences = json_encode( $preferences );
+	}
+
+	$no_content_search_message =  __(
+		'Sorry, we did not find any content matching your article.',
+		'findthebest'
+	);
+
+	$variables = array(
+		'ajaxPath' => admin_url( 'admin-ajax.php' ),
+		'editWidgetMessage' => __( 'Edit Widget: ', 'findthebest' ),
+		'loadingImagePath' => plugins_url( 'images/', __FILE__ ) . 'load.gif',
+		'loadingMessage' => __( 'Loading widget designer', 'findthebest' ),
+		'noContentSearchMessage' => $no_content_search_message,
+		'remoteRoot' => FTB_REMOTE_ROOT,
+		'widgetDesignerPrefs' => $preferences
+	);
+
+	wp_localize_script( 'ftb_script', 'ftbData', $variables );
+
+	wp_enqueue_style( 'box_style', file_path( '/css/box.css' ) );
+	wp_enqueue_style( 'ftb_style', file_path( '/css/ftb.css' ) );
+
+	wp_enqueue_script(
+		'ftb_wordpress_analytics_js',
+		FTB_REMOTE_ROOT . '/ajax_get_core_script?type=js&name=wordpress_analytics',
+		array( 'ftb_script' )
+	);
+
+	add_filter( 'tiny_mce_before_init', __NAMESPACE__ . '\\tiny_mce_init' );
+	add_filter( 'mce_external_plugins', __NAMESPACE__ . '\\tiny_mce_plugin' );
+}
+
+function file_path( $path, $relativity = 'remote' ) {
+	switch ( $relativity ) {
+	case 'remote':
+		return plugins_url( $path, __FILE__ );
+
+	case 'local':
+		return untrailingslashit( dirname( __FILE__ ) ) . $path;
+	}
+
+	return '';
+}
+
+function initialize() {
+	$languages_path = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
+	load_plugin_textdomain( 'findthebest', false, $languages_path );
+}
+
+function meta_box_shim() {
+	echo render( 'meta-box' );
+}
+
+/**
+ * The HTML generated from rendering a plugin view with the specified arguments.
+ *
+ * @param string $view The PHP file name without the extension.
+ * @param array $arguments An associative array of variables made available.
+ * @return string The generated HTML.
+ */
+function render( $view, $arguments = array() ) {
+	$path = file_path( "/views/{$view}.php", 'local' );
+	$arguments[ 'image_dir' ] = plugins_url( 'images/', __FILE__ );
+
+	ob_start();
+	require $path;
+
+	return ob_get_clean();
+}
+
+/**
+ * Called from AJAX to update plugin preferences. These preferences are passed
+ * in as a JSON string.
+ */
+function save_prefs() {
+	$preferences = sanitize_text_field( $_POST[ 'prefs' ] );
+	if ( ! is_string( $preferences ) ) {
+		die;
+	}
+
+	$preferences = strip_slashes( $preferences );
+
+	// Disallow abnormally large JSON input.
+	if ( strlen( $preferences ) >= 0x100000  ) {
+		die;
+	}
+
+	$preferences = json_decode( $preferences );
+	if ( null === $preferences ) {
+		die;
+	}
+
+	update_option( FTB_SETTINGS_PREFS, $preferences );
+
+	die;
+}
+
+/**
+ * Converts the FindTheBest shortcode into an HTML embed code.
+ *
+ * @param array $attributes An associative array of shortcode arguments.
+ * @return string The HTML embed code.
+ */
+function shortcode_handler( $attributes ) {
+	if ( empty( $attributes ) ) {
+		return null;
+	}
+
+	$defaults = array(
+		'height' => '',
+		'id' => '',
+		'link' => '',
+		'name' => '',
+		'url' => '',
+		'width' => ''
+	);
+
+	$arguments = wp_parse_args( $attributes, $defaults );
+
+	if ( empty( $arguments['id'] ) || empty( $arguments['link'] ) ||
+		empty( $arguments['name'] ) || empty( $arguments['url'] ) ) {
+		return null;
+	}
+
+	$arguments['width'] = intval( $arguments['width'] );
+	$arguments['height'] = intval( $arguments['height'] );
+
+	if ( $arguments['width'] <= 0 || $arguments['height'] <= 0 ) {
+		return null;
+	}
+
+	$arguments = array(
+		'height' => $arguments['height'],
+		'id' => $arguments['id'],
+		'link' => $arguments['link'],
+		'name' => $arguments['name'],
+		'url' => $arguments['url'],
+		'width' => $arguments['width'],
+	);
+
+	return render( 'embed-code', $arguments );
+}
+
+function tiny_mce_init( $init_options ) {
+	$css_path = plugins_url( 'css/tiny-mce-plugin.css', __FILE__ );
+	$init_options[ 'content_css' ] .= ',' . $css_path;
+
+	return $init_options;
+}
+
+function tiny_mce_plugin( $plugins ) {
+	$plugins[ 'findthebest' ] = plugins_url( 'js/tiny-mce-plugin.js', __FILE__ );
+
+	return $plugins;
+}
