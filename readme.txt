@@ -4,7 +4,7 @@ Donate link: http://findthebest.com/
 Tags: findthebest, find the best, embed, data, widget, comparison, consumer
 Requires at least: 2.7
 Tested up to: 3.8
-Stable tag: 1.0
+Stable tag: 2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,6 @@ details on one topic.
 
 == Changelog ==
 
-= 1.0 =
+= 2.0 =
 
-* Boost your content today.
+* Full revamp from initial version 1.0
