@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Content Boost by FindTheBest
  * Description: The FindTheBest plugin allows you to embed widgets from FindTheBest into your WordPress site's blog posts.
- * Version: 2.2
+ * Version: 2.2.1
  * Author: FindTheBest
  * Author URI: http://findthebest.com
  * License: GPLv2

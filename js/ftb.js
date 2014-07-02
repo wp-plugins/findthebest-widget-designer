@@ -299,7 +299,9 @@ jQuery( document ).ready( function( $ ) {
 		var loadPromise = FTBWP.load = $.Deferred().fail( FTBWP.loadFailed );
 		setTimeout( loadPromise.reject, 8000 ); // Timeout after 10 seconds
 
-		$.receiveMessage(FTBWP.widgetDesignerHandler, ftbData.remoteRoot);
+		// Need protocol for receiveMessage interface
+		var receiveMessageRoot = window.location.protocol + ftbData.remoteRoot;
+		$.receiveMessage( FTBWP.widgetDesignerHandler, receiveMessageRoot );
 
 		window.scrollTo( 0, 0 );
 	};
