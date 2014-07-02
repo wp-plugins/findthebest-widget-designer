@@ -4,7 +4,7 @@ Donate link: http://findthebest.com/
 Tags: findthebest, find the best, embed, data, widget, comparison, consumer
 Requires at least: 2.7
 Tested up to: 3.9
-Stable tag: 2.1
+Stable tag: 2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,9 @@ details on one topic.
 5. Preview or publish your post to see your widget(s) in action.
 
 == Changelog ==
+
+2.2 Add HTTPS/SSL support
+    Add support for dealing with rate limited requests
 
 2.1 Remove use of namespaces to support PHP 5.3
     Optional support for custom post types

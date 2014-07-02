@@ -136,13 +136,34 @@ jQuery( document ).ready( function( $ ) {
 			FTBWP.updateSuggestions( data );
 		} );
 
-		FTBWP.xhr.fail( function( xhr, textStatus, errorThrown ) {
+		FTBWP.xhr.fail( FTBWP.checkIfRateLimited );
+
+		FTBWP.xhr.fail( function( xhr, textStatus ) {
 			if ( 'abort' === textStatus ) {
 				return;
 			}
 
 			FTBWP.updateSuggestions( null );
 		} );
+	};
+
+	FTBWP.checkIfRateLimited = function( xhr, textStatus ) {
+		// Only handle 403 requests
+		if ( +xhr.status !== 403 ) {
+			return;
+		}
+
+		// Hide any existing boxes
+		BOX.hide();
+
+		// Show unblock form if its a 403
+		BOX.show( {
+			iframe: ftbData.remoteRoot + '/block_request_form',
+			w: 650,
+			h: 650,
+			pad: 20
+		} );
+
 	};
 
 	FTBWP.getBody = function() {
@@ -256,7 +277,7 @@ jQuery( document ).ready( function( $ ) {
 
 		var url = ftbData.remoteRoot + '/api/wordpress_widget_designer?';
 		if ( 'string' === typeof $item ) {
-			url += 'wid=' + encodeURIComponent($item) + '&';
+			url += 'wid=' + encodeURIComponent( $item ) + '&';
 		} else if ( $item.data( 'info' ) ) {
 			$.extend( designerOptions, $item.data( 'info' ).widgetDesignerArgs );
 		}
@@ -275,9 +296,18 @@ jQuery( document ).ready( function( $ ) {
 			top: 50
 		} );
 
+		var loadPromise = FTBWP.load = $.Deferred().fail( FTBWP.loadFailed );
+		setTimeout( loadPromise.reject, 8000 ); // Timeout after 10 seconds
+
 		$.receiveMessage(FTBWP.widgetDesignerHandler, ftbData.remoteRoot);
 
 		window.scrollTo( 0, 0 );
+	};
+
+	FTBWP.loadFailed = function() {
+		// Initiate a dummy uncached request to check if the user was rate limited
+		var url = ftbData.remoteRoot + '/api/wordpress_widget_check?d=' + (new Date().getTime());
+		$.get( url ).fail( FTBWP.checkIfRateLimited );
 	};
 
 	FTBWP.removeOldTinyMCENode = function() {
@@ -403,8 +433,7 @@ jQuery( document ).ready( function( $ ) {
 	FTBWP.updateSuggestions = function( data ) {
 		FTBWP.xhr = null;
 
-		$( '#ftb-suggestions' ).empty();
-		$( '#ftb-suggestions' ).scrollTop( 0 );
+		$( '#ftb-suggestions' ).empty().scrollTop( 0 );
 		$( '#ftb-loading' ).hide();
 		$( '#ftb #ftb-search' ).removeClass( 'disabled' );
 
@@ -527,6 +556,10 @@ jQuery( document ).ready( function( $ ) {
 
 			case 'insert':
 				FTBWP.insertPressed( data.preferences, data.options );
+				break;
+
+			case 'load':
+				FTBWP.load && FTBWP.load.resolve();
 				break;
 		}
 	};
