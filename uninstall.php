@@ -5,4 +5,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
 
-delete_option( 'ftb_widget_designer_prefs' );
+delete_option( 'findthebest_options' );
