@@ -1,7 +1,4 @@
-<div style="width: <?php echo intval( $arguments[ 'width' ] ); ?>px; margin: 0 auto;">
-	<iframe width="<?php echo intval( $arguments[ 'width' ] ); ?>" height="<?php echo intval( $arguments[ 'height' ] ); ?>" frameborder="0" scrolling="no" style="vertical-align:top;" src="<?php echo esc_url( $arguments[ 'url' ] ); ?>"></iframe>
-	<div style="text-align: center;">
-		<a target="_blank" href="<?php echo esc_url( $arguments[ 'link' ] ); ?>" style="font: 10px/14px arial; color:#3d3d3d;"><?php echo esc_html( $arguments[ 'name' ] ); ?></a>
-	</div>
+<div style="width:100%;max-width:<?php echo $width; ?>px;margin:0 auto;">
+<iframe src="<?php echo esc_url( $url ); ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" frameborder="0" scrolling="no" style="position:static;vertical-align:top;margin:0;max-width:100%;<?php echo ( $height ? "min-height:" . $height . "px;" : "" ); ?>"></iframe>
+<div style="text-align:center;"><a target="_blank" href="<?php echo esc_url( $link ); ?>" style="font:14px/16px arial;color:#3d3d3d;"><?php echo esc_html( $link_text ); ?></a></div>
 </div>
-<br />
