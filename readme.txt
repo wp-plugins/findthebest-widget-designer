@@ -52,23 +52,23 @@ historical approval ratings compared to other presidents).
 
 == Changelog ==
 
-=3.0=
+= 3.0 =
 * Significant overhaul, rebranding as the "Visual Search" plugin
 * Begin indexing full breadth of content and visuals
 * More descriptive widget placeholders when editing post
 * Add optional API Key support for preium partners
 
-=2.2.1=
+= 2.2.1 =
 * Fix iframe API interface with FTB application
 
-=2.2=
+= 2.2 =
 * Add HTTPS/SSL support
 * Add support for dealing with rate limited requests
 
-=2.1=
+= 2.1 =
 * Remove use of namespaces to support PHP 5.3
 * Optional support for custom post types
 * Fix image resource paths
 
-=2.0=
+= 2.0 =
 * Full revamp from initial version 1.0
