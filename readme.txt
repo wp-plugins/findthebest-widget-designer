@@ -56,7 +56,7 @@ historical approval ratings compared to other presidents).
 * Significant overhaul, rebranding as the "Visual Search" plugin
 * Begin indexing full breadth of content and visuals
 * More descriptive widget placeholders when editing post
-* Add optional API Key support for preium partners
+* Add optional API Key support for premium partners
 
 = 2.2.1 =
 * Fix iframe API interface with FTB application
