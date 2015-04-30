@@ -2,7 +2,7 @@
 /**
  * Plugin Name: FindTheBest Visual Search
  * Description: Discover and embed interactive data visualizations on people, organizations, products, and more.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: FindTheBest
  * Author URI: http://findthebest.com
  * Text Domain: findthebest
@@ -93,12 +93,13 @@ class FindTheBest_VisualSearch {
 		);
 
 		global $wp_version;
-		$current_user = wp_get_current_user();
+		$user = wp_get_current_user();
+		$api_key = $this->get_option( 'findthebest_option_api_key' );
 
 		wp_localize_script( 'ftb_script', 'ftbData', array(
-			'apiKey' => $this->get_option( 'findthebest_option_api_key' ) ?: FTB_WP_DEFAULT_KEY,
-			'userID' => $current_user->user_login ?: $current_user->ID,
-			'userEmail' => $current_user->user_email,
+			'apiKey' => $api_key ? $api_key : FTB_WP_DEFAULT_KEY,
+			'userID' => $user->user_login ? $user->user_login : $user->ID,
+			'userEmail' => $user->user_email,
 			'wpVersion' => floatval($wp_version),
 			'locale' => get_locale()
 		) );
