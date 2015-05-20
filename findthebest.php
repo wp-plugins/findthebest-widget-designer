@@ -2,7 +2,7 @@
 /**
  * Plugin Name: FindTheBest Visual Search
  * Description: Discover and embed interactive data visualizations on people, organizations, products, and more.
- * Version: 3.0.1
+ * Version: 3.0.3
  * Author: FindTheBest
  * Author URI: http://findthebest.com
  * Text Domain: findthebest
@@ -71,7 +71,8 @@ class FindTheBest_VisualSearch {
 
 	private function post_type_supported() {
 		// Add optional support for custom post types. Always add to post_type 'post'.
-		return post_type_supports( get_post_type(), 'findthebest' ) || get_post_type() == 'post';
+		$post_type = get_post_type();
+		return post_type_supports( $post_type, 'findthebest' ) || $post_type == 'post' || $post_type == 'page';
 	}
 
 	function admin_menu( $hook ) {
@@ -193,14 +194,12 @@ class FindTheBest_VisualSearch {
 	 * The HTML generated from rendering a plugin view with the specified arguments.
 	 *
 	 * @param string $view The PHP file name without the extension.
-	 * @param array $arguments An associative array of variables made available.
+	 * @param array $vars An associative array of variables made available.
 	 * @return string The generated HTML.
 	 */
-	function render( $view, $arguments = array() ) {
+	function render( $view, $vars = array() ) {
 		$path = $this->file_path( "/views/{$view}.php", 'local' );
-		$arguments[ 'image_dir' ] = plugins_url( 'images/', __FILE__ );
-
-		extract($arguments, EXTR_SKIP);
+		$vars[ 'image_dir' ] = plugins_url( 'images/', __FILE__ );
 
 		ob_start();
 		require $path;
