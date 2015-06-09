@@ -6,6 +6,6 @@
 
 <?php if (isset($vars['description'])): ?>
 
-	<p class="description"><?php echo $vars['description']; ?></p>
+	<p class="description"><?php echo wp_kses_post( $vars['description'] ); ?></p>
 
 <?php endif; ?>

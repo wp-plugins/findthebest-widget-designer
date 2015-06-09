@@ -12,17 +12,24 @@
 				var id = getAttribute( options, 'id' );
 				var width = getAttribute( options, 'width' );
 				var height = getAttribute( options, 'height' );
-				var style = '';
+				var style = {};
 
 				if ( width.length > 0 && height.length > 0 ) {
-					style = 'width: ' + width + 'px; height: ' + height + 'px;';
+					style = {width: width, height: height};
 				}
 
-				return '<img class="ftb-tiny-mce-widget mceItem" ' +
-				'data-code="findthebest' + tinyMCE.DOM.encode( options ) +
-				'" data-id="' + id + '" data-title="' + title +
-				'" data-mce-resize="false" data-mce-placeholder="1"' +
-				'" style="' + style + '">';
+				var img = $( '<img/>' )
+					.addClass( 'ftb-tiny-mce-widget mceItem' )
+					.attr( {
+						'data-code': 'findthebest' + options,
+						'data-id': id ,
+						'data-title': title ,
+						'data-mce-resize': 'false' ,
+						'data-mce-placeholder': '1'
+					} )
+					.css( style );
+
+				return img[0].outerHTML;
 			};
 
 			return co.replace( /\[findthebest([^\]]*)\]/g, replaceCallback );
