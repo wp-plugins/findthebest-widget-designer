@@ -81,7 +81,7 @@ FTBWP = ( function( $ ) {
 			return property + '="' + sanitizeShortcode( options[property] ) + '"';
 		} );
 
-		var shortcode = '[findthebest ' + attributes.join( ' ' ) + ']\n\n';
+		var shortcode = '[graphiq ' + attributes.join( ' ' ) + ']\n\n';
 		window.send_to_editor( shortcode );
 	}
 
