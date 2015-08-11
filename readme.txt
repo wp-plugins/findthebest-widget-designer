@@ -1,10 +1,10 @@
-=== FindTheBest Visual Search ===
-Contributors: FindTheBest
-Donate link: http://findthebest.com/
-Tags: findthebest, find the best, visualization, infographic, embed, widget, comparison
+=== Graphiq Search ===
+Contributors: Graphiq
+Donate link: https://graphiq.com/
+Tags: graphiq, find the best, visualization, infographic, embed, widget, comparison
 Requires at least: 2.7
 Tested up to: 4.2
-Stable tag: 3.0.0
+Stable tag: 3.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,18 @@ historical approval ratings compared to other presidents).
 3. Once you've found the right visual, add it to your post
 
 == Changelog ==
+
+= 3.0.5 =
+* FindTheBest is now Graphiq
+
+= 3.0.4 =
+* Better validation and syntax for Wordpress VIP coding standards
+
+= 3.0.3 =
+* Removed use of extract for Wordpress VIP
+
+= 3.0.2 =
+* Add support for "Page" post type
 
 = 3.0 =
 * Significant overhaul, rebranding as the "Visual Search" plugin
