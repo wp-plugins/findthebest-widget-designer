@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Graphiq Search
  * Description: Discover and embed interactive visualizations on people, organizations, products, and more.
- * Version: 3.0.5
+ * Version: 3.0.6
  * Author: Graphiq
  * Author URI: https://graphiq.com
  * Text Domain: findthebest
@@ -53,7 +53,7 @@ class GraphiqSearch {
 	function add_media_button() {
 		if( $this->post_type_supported() ) {
 			echo $this->render( 'media-button', array(
-				'title' => __( 'Add Visuals', 'findthebest' )
+				'title' => __( 'Add Visualizations', 'findthebest' )
 			) );
 		}
 	}

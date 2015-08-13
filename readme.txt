@@ -4,7 +4,7 @@ Donate link: https://graphiq.com/
 Tags: graphiq, find the best, visualization, infographic, embed, widget, comparison
 Requires at least: 2.7
 Tested up to: 4.2
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ Add relevant, interactive content to any WordPress post. Our plugin turns plain
 text into visually engaging articles, with images, slideshows, side-by-side
 comparisons, and deep details on people, organizations, products, and services.
 
-To begin, click the "Add Visuals" button above the post editor. If your post
+To begin, click the "Add Visualizations" button above the post editor. If your post
 contains any content, we'll begin searching for visuals that match what you're
 writing about. From this interface you can also search for something specific,
 see trending visuals, or browse by category. You can start a search from our
@@ -51,6 +51,9 @@ historical approval ratings compared to other presidents).
 3. Once you've found the right visual, add it to your post
 
 == Changelog ==
+
+= 3.0.6 =
+* Minor wording change for launch button
 
 = 3.0.5 =
 * FindTheBest is now Graphiq
