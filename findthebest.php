@@ -1,17 +1,17 @@
 <?php
 /**
- * Plugin Name: FindTheBest Visual Search
- * Description: Discover and embed interactive data visualizations on people, organizations, products, and more.
- * Version: 3.0.1
- * Author: FindTheBest
- * Author URI: http://findthebest.com
+ * Plugin Name: Graphiq Search
+ * Description: Discover and embed interactive visualizations on people, organizations, products, and more.
+ * Version: 3.0.6
+ * Author: Graphiq
+ * Author URI: https://graphiq.com
  * Text Domain: findthebest
  * License: GPLv2
  */
 
 define( 'FTB_WP_DEFAULT_KEY', 'cd3d6c2a036146d0e3b242c510ebc855' );
 
-class FindTheBest_VisualSearch {
+class GraphiqSearch {
 
 	/**
 	 * Singleton
@@ -21,7 +21,7 @@ class FindTheBest_VisualSearch {
 
 		if ( !$instance ) {
 			load_plugin_textdomain( 'findthebest', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-			$instance = new FindTheBest_VisualSearch;
+			$instance = new GraphiqSearch;
 		}
 
 		return $instance;
@@ -43,16 +43,17 @@ class FindTheBest_VisualSearch {
 		}
 
 		add_shortcode( 'findthebest', array( &$this, 'shortcode_handler' ) );
+		add_shortcode( 'graphiq', array( &$this, 'shortcode_handler' ) );
 	}
 
-	public function FindTheBest_VisualSearch() {
+	public function GraphiqSearch() {
 		$this->__construct();
 	}
 
 	function add_media_button() {
 		if( $this->post_type_supported() ) {
 			echo $this->render( 'media-button', array(
-				'title' => __( 'Add Visuals', 'findthebest' )
+				'title' => __( 'Add Visualizations', 'findthebest' )
 			) );
 		}
 	}
@@ -61,7 +62,7 @@ class FindTheBest_VisualSearch {
 		if( $this->post_type_supported() ) {
 			add_meta_box(
 				'ftb',
-				__( 'FindTheBest Visual Search', 'findthebest' ),
+				__( 'Graphiq Search', 'findthebest' ),
 				array( &$this, 'meta_box_shim' ),
 				get_post_type(),
 				'side'
@@ -71,7 +72,8 @@ class FindTheBest_VisualSearch {
 
 	private function post_type_supported() {
 		// Add optional support for custom post types. Always add to post_type 'post'.
-		return post_type_supports( get_post_type(), 'findthebest' ) || get_post_type() == 'post';
+		$post_type = get_post_type();
+		return post_type_supports( $post_type, 'findthebest' ) || $post_type == 'post' || $post_type == 'page';
 	}
 
 	function admin_menu( $hook ) {
@@ -112,8 +114,8 @@ class FindTheBest_VisualSearch {
 
 	function options_page_add_menu() {
 		add_options_page(
-			__( 'FindTheBest Options', 'findthebest' ), // Page title
-			__( 'FindTheBest', 'findthebest' ),         // Menu title
+			__( 'Graphiq Search Options', 'findthebest' ), // Page title
+			__( 'Graphiq Search', 'findthebest' ),         // Menu title
 			'manage_options',                           // Capability
 			'findthebest-options',                      // Menu slug
 			array( &$this, 'options_page_render' )      // Render callback
@@ -128,10 +130,10 @@ class FindTheBest_VisualSearch {
 		);
 
 		add_settings_section(
-			'findthebest_options_plugin',             // ID
-			null,                                     // Title
-			array( &$this, 'options_callback_noop' ), // Callback
-			'findthebest-options'                     // Page
+			'findthebest_options_plugin', // ID
+			null,                         // Title
+			null,                         // Callback
+			'findthebest-options'         // Page
 		);
 
 		add_settings_field(
@@ -141,10 +143,6 @@ class FindTheBest_VisualSearch {
 			'findthebest-options',               // Page
 			'findthebest_options_plugin'         // Section
 		);
-	}
-
-	function options_callback_noop() {
-
 	}
 
 	function options_api_key() {
@@ -193,14 +191,12 @@ class FindTheBest_VisualSearch {
 	 * The HTML generated from rendering a plugin view with the specified arguments.
 	 *
 	 * @param string $view The PHP file name without the extension.
-	 * @param array $arguments An associative array of variables made available.
+	 * @param array $vars An associative array of variables made available.
 	 * @return string The generated HTML.
 	 */
-	function render( $view, $arguments = array() ) {
+	function render( $view, $vars = array() ) {
 		$path = $this->file_path( "/views/{$view}.php", 'local' );
-		$arguments[ 'image_dir' ] = plugins_url( 'images/', __FILE__ );
-
-		extract($arguments, EXTR_SKIP);
+		$vars[ 'image_dir' ] = plugins_url( 'images/', __FILE__ );
 
 		ob_start();
 		require $path;
@@ -209,7 +205,7 @@ class FindTheBest_VisualSearch {
 	}
 
 	/**
-	 * Converts the FindTheBest shortcode into an HTML embed code.
+	 * Converts the Graphiq shortcode into an HTML embed code.
 	 *
 	 * @param array $attributes An associative array of shortcode arguments.
 	 * @return string The HTML embed code.
@@ -231,6 +227,11 @@ class FindTheBest_VisualSearch {
 
 		$arguments = wp_parse_args( $attributes, $defaults );
 
+		// Backwards compatibility with "name"
+		if ( !empty( $arguments['name'] ) ) {
+			$arguments['title'] = $arguments['name'];
+		}
+
 		if ( empty( $arguments['id'] ) || empty( $arguments['link'] ) ||
 			empty( $arguments['title'] ) || empty( $arguments['url'] ) ) {
 			return null;
@@ -249,7 +250,7 @@ class FindTheBest_VisualSearch {
 	function get_shortcode_strategy() {
 		global $wp_version;
 
-		return floatval($wp_version) >= 3.9 ? 'view' : 'plugin';
+		return version_compare($wp_version, '3.9', '>=') ? 'view' : 'plugin';
 	}
 
 	function print_media_templates() {
@@ -280,4 +281,4 @@ class FindTheBest_VisualSearch {
 
 }
 
-add_action( 'plugins_loaded', array( 'FindTheBest_VisualSearch', 'init' ) );
+add_action( 'plugins_loaded', array( 'GraphiqSearch', 'init' ) );

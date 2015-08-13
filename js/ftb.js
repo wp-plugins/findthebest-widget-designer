@@ -72,15 +72,17 @@ FTBWP = ( function( $ ) {
 	}
 
 	function insertPressed( options ) {
-		options.title = sanitizeShortcode( options.title );
+		var properties = ['id', 'title', 'width', 'height', 'url', 'link', 'link_text'];
 
-		var shortcode = '[findthebest id="' + options.id + '" title="' +
-			options.title + '" width="' + options.width + '" height="' +
-			options.height + '" url="' + options.url + '" link="' +
-			options.link + '" link_text="' + options.link_text +
-			'"]';
+		var attributes = $.map( properties, function( property, i ) {
+			if ( ! options.hasOwnProperty( property ) ) {
+				return '';
+			}
+			return property + '="' + sanitizeShortcode( options[property] ) + '"';
+		} );
 
-		window.send_to_editor( shortcode + '\n\n' );
+		var shortcode = '[graphiq ' + attributes.join( ' ' ) + ']\n\n';
+		window.send_to_editor( shortcode );
 	}
 
 	function isTinyMCEActive() {
@@ -94,8 +96,8 @@ FTBWP = ( function( $ ) {
 	function sanitizeShortcode( text ) {
 		return text
 			.replace( /\[/g, '(' )
-			.replace( /\]/g, ')' )
-			.replace( /\"/g, '\'' );
+			.replace( /]/g,  ')' )
+			.replace( /"/g,  '\'' );
 	}
 
 	function launchFromSidebar() {
