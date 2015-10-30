@@ -61,5 +61,5 @@ msgid "Graphiq"
 msgstr ""
 
 #. Author URI of the plugin/theme
-msgid "https://graphiq.com"
+msgid "https://www.graphiq.com"
 msgstr ""

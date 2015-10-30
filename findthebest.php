@@ -2,9 +2,9 @@
 /**
  * Plugin Name: Graphiq Search
  * Description: Discover and embed interactive visualizations on people, organizations, products, and more.
- * Version: 3.0.6
+ * Version: 3.0.9
  * Author: Graphiq
- * Author URI: https://graphiq.com
+ * Author URI: https://www.graphiq.com
  * Text Domain: findthebest
  * License: GPLv2
  */

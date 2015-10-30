@@ -1,10 +1,10 @@
 === Graphiq Search ===
 Contributors: Graphiq
-Donate link: https://graphiq.com/
+Donate link: https://www.graphiq.com/
 Tags: graphiq, find the best, visualization, infographic, embed, widget, comparison
 Requires at least: 2.7
 Tested up to: 4.2
-Stable tag: 3.0.6
+Stable tag: 3.0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,15 @@ historical approval ratings compared to other presidents).
 3. Once you've found the right visual, add it to your post
 
 == Changelog ==
+
+= 3.0.9 =
+* Fix MCE views for wp 3.9-4.1
+
+= 3.0.8 =
+* Fix Graphiq URL references, minify standalone cms integration library
+
+= 3.0.7 =
+* More flexible data type handling for shortcodes
 
 = 3.0.6 =
 * Minor wording change for launch button

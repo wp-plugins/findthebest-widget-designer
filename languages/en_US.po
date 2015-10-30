@@ -68,8 +68,8 @@ msgid "Graphiq"
 msgstr "Graphiq"
 
 #. Author URI of the plugin/theme
-msgid "https://graphiq.com"
-msgstr "https://graphiq.com"
+msgid "https://www.graphiq.com"
+msgstr "https://www.graphiq.com"
 
 #~ msgid "Add Visuals"
 #~ msgstr "Add Visuals"

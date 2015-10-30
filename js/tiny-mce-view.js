@@ -17,8 +17,11 @@
 			// 3.9 - 4.1, use old view API
 		} else {
 
-			wp.mce.views.register( shortcodeLabel, {
-				View: {
+			wp.mce.views.register( shortcodeLabel, $.extend( {}, wp.mce.media, {
+				shortcode: shortcodeLabel,
+				edit: $.noop, // Override wp.mce.media
+				View: wp.mce.View.extend({
+					className: 'editor-findthebest',
 					template: wp.media.template( 'editor-findthebest' ),
 					postID: $('#post_ID').val(),
 					initialize: function (options) {
@@ -27,8 +30,8 @@
 					getHtml: function () {
 						return this.template(this.shortcode.attrs.named);
 					}
-				}
-			});
+				})
+			}));
 
 		}
 	} );

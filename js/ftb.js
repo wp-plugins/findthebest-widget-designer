@@ -94,6 +94,7 @@ FTBWP = ( function( $ ) {
 	}
 
 	function sanitizeShortcode( text ) {
+		text = '' + text; // Coerce to string
 		return text
 			.replace( /\[/g, '(' )
 			.replace( /]/g,  ')' )
